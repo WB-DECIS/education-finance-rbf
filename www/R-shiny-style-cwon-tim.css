@@ -1,0 +1,90 @@
+
+
+.navbar-default .navbar-brand {
+    color: #293473;
+    font-family: andes;
+    font-weight: bold;
+}
+
+.navbar-brand {
+    float: left;
+    padding: 14.5px 15px;
+    font-size: 19px;
+    line-height: 21px;
+    height: 50px;
+    background: white;
+    font-weight: 600 !important;
+}
+
+.navbar-default .navbar-brand:focus, .navbar-default  {
+  /*  color: #293473; */ 
+    background-color: transparent;
+    font-family: andes;
+
+}
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+    color: #f6f6f6;
+    background-color: #293473;
+    font-family: andes;
+
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #293473;
+    background-color: #bcbcbc;
+    font-family: andes;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+    color: #293473;
+    background-color: #47BEDE;
+    font-family: andes;
+}
+
+/*
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: #f6f6f6;
+    background-color: #293473;
+    font-family: andes;
+}
+
+.nav-tabs>li>a {
+    color: #293473;
+    background-color: #bcbcbc;
+    font-family: andes;
+}
+
+.nav-tabs>li>a:hover {
+    color: #293473;
+    background-color: #47BEDE;
+    font-family: andes;
+}
+
+*/
+
+/* Tim's suggested changes */
+.nav-tabs > li > a,
+#typemap .radio label  {
+  color: #293473;
+}
+
+.irs--shiny .irs-bar {
+  background: #293473;
+  border-top-color: #293473;
+  border-bottom-color: #293473;
+}
+
+.irs--shiny .irs-single {
+  background-color: #293473;
+}
+
+.slider-animate-button .play {
+  opacity: 1;  
+  color: #293473;
+}
+
+.slider-animate-button .pause {
+  opacity: 1;  
+  color: #293473;
+}
