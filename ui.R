@@ -81,7 +81,7 @@ ui <-  shinyUI(
                   ),
                   
                   column(width = 4,
-                         pickerInput("fiscal_rbf", "Fiscal Year:",
+                         pickerInput("fiscal_rbf", "Fiscal Year of Approval:",
                                      choices = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
                                      # selected = c("2016", "2017", "2018", "2019", "2020", "2021"),
                                      selected = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
@@ -131,12 +131,11 @@ ui <-  shinyUI(
                       title = "Disbursement-linked Indicators (DLI) are the indicators that must be achieved for rewards or incentives to be disbursed in RBF projects.",
                       `data-toggle`="tooltip",  `data-placement` ="bottom"),
             fluidRow(
-              includeHTML("www/tab3.html"),
 
             column(width = 4,
                    pickerInput("region_dli", "Region:",
                                choices = c(sort(unique(as.character(dli_data$region_name)))),
-                               selected = c('Sub-Saharan Africa'),
+                               selected = c(sort(unique(as.character(dli_data$region_name)))),
                                #selected = c(sort(unique(as.character(dli_data$region_name)))),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE)
@@ -152,7 +151,7 @@ ui <-  shinyUI(
             column(width = 4,
                    pickerInput("country_dli", "Country:",
                                choices =  c(sort(unique(as.character(dli_data$Country)))),
-                               #selected = c(sort(unique(as.character(dli_data$Country)))),
+                               selected = c(sort(unique(as.character(dli_data$Country)))),
                                # selected = c("Afghanistan", "Argentina", "Bangladesh", "Brazil",
                                #              "Chile",  "Honduras", "India",
                                #              "Nepal"
@@ -162,9 +161,10 @@ ui <-  shinyUI(
                                multiple = TRUE),
             ),
             column(width = 4,
-                   pickerInput("fiscal_dli", "Fiscal Year:",
+                   pickerInput("fiscal_dli", "Fiscal Year of Approval:",
                                choices = c(sort(unique(dli_data$`Fiscal Year`))),
-                               selected = c("2016", "2017", "2018", "2019", "2020", "2021"),
+                               selected = c(sort(unique(as.character(dli_data$`Fiscal Year`)))),
+                               options = list(`actions-box` = TRUE), 
                                multiple = TRUE),
             ),
             
@@ -172,8 +172,10 @@ ui <-  shinyUI(
                    pickerInput(inputId="edu_dli",
                                label="Level of Education:",
                                choices = c(sort(unique(dli_data$`Level of Education`))),
-                               selected = c("Early Child Development", "Primary and Secondary Education", 
-                                            "Tertiary Education"),
+                               selected = c(sort(unique(dli_data$`Level of Education`))),
+                               # selected = c("Early Child Development", "Primary and Secondary Education", 
+                               #              "Tertiary Education"),
+                               options = list(`actions-box` = TRUE), 
                                multiple = TRUE
                    )
             ),
@@ -182,7 +184,7 @@ ui <-  shinyUI(
                    pickerInput(inputId="focus_dli",
                                label="Focus Area:",
                                choices = c(sort(unique(dli_data$`Focus area`))),
-                               selected = "Teachers",
+                               selected = c(sort(unique(dli_data$`Focus area`))),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE
                    )
@@ -204,8 +206,9 @@ ui <-  shinyUI(
               #column( width = 12, highchartOutput('bar')),
                      #column( width = 12, tableOutput("data")),
                      column(width = 12,
-                            dataTableOutput("table_dli"))
+                            dataTableOutput("table_dli")),
                             #formattableOutput("table"))
+                     includeHTML("www/tab3.html")
             ),
         
         ),
