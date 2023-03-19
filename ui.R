@@ -13,6 +13,10 @@ library("formattable")
 rbf_data <- readRDS("data/rbf_data.rds")
 dli_data <- readRDS("data/dli_data.rds")
 dli_data$`Focus area` <- gsub("_", " ", dli_data$`Focus area`)
+dli_data$`Level of Education` <- factor(dli_data$`Level of Education`, levels=c('Early Child Development', 'Primary Education', 
+                                                                    'Secondary Education', 'Primary and Secondary Education',
+                                                                    'Tertiary Education','Vocational Education and Training',
+                                                                    'Lifelong Learning'))
 
 # set the order of income groups
 temp = factor(unique(as.character(rbf_data$income_name)), 
@@ -171,8 +175,10 @@ ui <-  shinyUI(
             column(4,
                    pickerInput(inputId="edu_dli",
                                label="Level of Education:",
-                               choices = c(sort(unique(dli_data$`Level of Education`))),
-                               selected = c(sort(unique(dli_data$`Level of Education`))),
+                               choices = levels(dli_data$`Level of Education`),
+                               # choices = c(sort(unique(dli_data$`Level of Education`))),
+                               selected = levels(dli_data$`Level of Education`),
+                               # selected = c(sort(unique(dli_data$`Level of Education`))),
                                # selected = c("Early Child Development", "Primary and Secondary Education", 
                                #              "Tertiary Education"),
                                options = list(`actions-box` = TRUE), 

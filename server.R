@@ -69,7 +69,7 @@ shinyServer = function(input, output, session) {
   
   output$table_rbf <- renderDataTable({
     #renderFormattable({
-    rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'>",rbf_data$`Project ID`,"</a>")
+    rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
     rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
     rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
     
@@ -80,7 +80,7 @@ shinyServer = function(input, output, session) {
       filter(`Fiscal Year` %in% input$fiscal_rbf) %>% 
       filter(`Level of Education` %in% input$edu_rbf) %>% 
       filter(`Lending Instrument` %in% input$lending_rbf) %>% 
-      select(`Project ID`,`Project Title`, Country_original,
+      select(`Project Title`, `Project ID`,Country_original,
              region_name, income_name,
              `Lending Instrument`, 
              `Fiscal Year`, `Level of Education`,
@@ -102,17 +102,17 @@ shinyServer = function(input, output, session) {
      DT::datatable(rbf_data_table,
                    class='cell-border stripe',
                    escape = FALSE,
-                   extensions = c ('Buttons', 'FixedHeader'), 
+                   extensions = c('Buttons', 'FixedColumns', "FixedHeader"), 
+                   rownames = F,
                  
                    options=list(
                      dom = 'Bfrtip',
                      paging = TRUE,
                      pageLength = 20,
                      buttons = c('copy', 'csv', 'excel'),
-                     fixedHeader=TRUE,
-                     fixedColumns = TRUE,
-                     #,
-                     scroller = T
+                     fixedHeader = TRUE,
+                     fixedColumns = list(leftColumns = 1),
+                     scroller = TRUE
                      #scrollX = T
                      #scrollY = T
                    ) 
@@ -211,11 +211,13 @@ shinyServer = function(input, output, session) {
       DT::datatable(dli_data_table,
                     class='cell-border stripe',
                     escape = FALSE,
-                    extensions = c ('Buttons', 'FixedHeader'), 
+                    extensions = c ('Buttons', 'FixedHeader', 'FixedColumns'), 
+                    rownames = F,
                     options=list(
                       dom = 'Bfrtip',
                       paging = FALSE,
                       fixedHeader=TRUE,
+                      fixedColumns = list(leftColumns = 1),
                       buttons = c('copy', 'csv', 'excel')
                       #,
                       # scroller = T,
