@@ -101,10 +101,11 @@ ui <-  shinyUI(
                 column(width = 4,
                        pickerInput(inputId="edu_rbf",
                               label="Level of Education:", 
-                              choices = c(sort(unique(rbf_data$`Level of Education`))),
+                              choices = levels(dli_data$`Level of Education`),
+                              selected = levels(dli_data$`Level of Education`),
                               # selected = c("Early Child Development", "Primary and Secondary Education", 
                               #              "Tertiary Education"),
-                              selected = c(sort(unique(rbf_data$`Level of Education`))),
+                              # selected = c(sort(unique(rbf_data$`Level of Education`))),
                               multiple = TRUE,
                               options = list(`actions-box` = TRUE)
                   )
