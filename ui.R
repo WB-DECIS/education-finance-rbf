@@ -28,7 +28,8 @@ ui <-  shinyUI(
     
         navbarPage("Results-Based Financing in Education",
                #theme = "R-shiny-style-cwon-tim.css",
-               theme = "custom_hd.css",
+               #theme = "custom_hd.css",
+                theme = "bootstrap",
                # add tooltips
                tags$script(HTML('
            $( document ).on("shiny:sessioninitialized", function(event) {
