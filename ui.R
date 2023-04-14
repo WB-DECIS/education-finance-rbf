@@ -18,11 +18,23 @@ dli_data$`Level of Education` <- factor(dli_data$`Level of Education`, levels=c(
                                                                     'Tertiary Education','Vocational Education and Training',
                                                                     'Lifelong Learning'))
 
+
 # set the order of income groups
 temp = factor(unique(as.character(rbf_data$income_name)), 
               levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 
-#rbf_data$`Fiscal Year` <- sub("^", "FY", rbf_data$`Fiscal Year`) # current dataset has no "FY", this line can be removed after the data update
+# Reformat year
+rbf_data$`Fiscal Year` <- sub("^", "FY", rbf_data$`Fiscal Year` %% 100) # current dataset has no "FY", this line can be removed after the data update
+dli_data$`Fiscal Year` <- sub("^", "FY", dli_data$`Fiscal Year` %% 100)
+
+# Restructure the Lending Instrument Variable
+rbf_data$`Lending Instrument` <- ifelse(rbf_data$`Lending Instrument` == "IPF/DLIs", "IBF with DLIs",
+                                        ifelse(rbf_data$`Lending Instrument` == "IPF/PBC", "IBF with PBCs","The Same")) 
+rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","The Same"))
+
+# Reorder income level
+rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
+dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 
 ui <-  shinyUI(
     
@@ -65,7 +77,7 @@ ui <-  shinyUI(
                          pickerInput("income_rbf", "Income:",
                                      choices = levels(factor(temp)),
                                      #selected = c('Lower middle income', "Low income", "middle income"),
-                                     selected = c(sort(unique(as.character(rbf_data$income_name)))),
+                                     selected = levels(factor(temp)),
                                      options = list(`actions-box` = TRUE), 
                                      multiple = TRUE)
                   ),
@@ -85,16 +97,16 @@ ui <-  shinyUI(
                          )
                   ),
                   
-                  column(width = 4,
+                  column(width = 3,
                          pickerInput("fiscal_rbf", "Fiscal Year of Approval:",
                                      choices = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
                                      # selected = c("2016", "2017", "2018", "2019", "2020", "2021"),
                                      selected = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
                                      multiple = TRUE,
                                      options = list(`actions-box` = TRUE)
-                         ),
-                        # align = "right",
-                        shiny::uiOutput(("log_details0"))
+                         )),
+                  column(width = 1,
+                        shiny::uiOutput("log_details0")
                   ),
                   # shiny::column(1, align = "right",
                   #               shiny::uiOutput(("log_details0"))
@@ -111,16 +123,17 @@ ui <-  shinyUI(
                               options = list(`actions-box` = TRUE)
                   )
                 ),
-                  column(width = 4, 
+                  column(width = 3, 
                          pickerInput("lending_rbf", "Lending Instrument:",
-                                     choices = c(sort(unique(rbf_data$`Lending Instrument`))),
+                                     choices = levels(rbf_data$`Lending Instrument`),
                                      # selected = c('IPF/DLIs', "IPF/PBC", "PforR"),
-                                     selected = c(sort(unique(rbf_data$`Lending Instrument`))),
+                                     selected = levels(rbf_data$`Lending Instrument`),
                                      multiple = TRUE,
                                      options = list(`actions-box` = TRUE)
-                                     ),
-                         shiny::uiOutput(("log_details2"))
-                  ),
+                                     )),
+                column(width = 1, align = "bottom",
+                         shiny::uiOutput("log_details2")
+                ),
                 ),
                 fluidRow(
                          column(width = 12,
@@ -149,8 +162,8 @@ ui <-  shinyUI(
             
             column(width = 4,
                    pickerInput("income_dli", "Income:",
-                               choices = c(sort(unique(as.character(dli_data$income_name)))),
-                               selected = c(sort(unique(as.character(dli_data$income_name)))),
+                               choices = levels(dli_data$income_name),
+                               selected = levels(dli_data$income_name),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE)
             ),

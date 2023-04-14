@@ -15,6 +15,24 @@ rbf_data <- readRDS("data/rbf_data.rds")
 dli_data <- readRDS("data/dli_data.rds")
 
 dli_data$`Focus area` <- gsub("_", " ", dli_data$`Focus area`)
+dli_data$`Level of Education` <- factor(dli_data$`Level of Education`, levels=c('Early Child Development', 'Primary Education', 
+                                                                                'Secondary Education', 'Primary and Secondary Education',
+                                                                                'Tertiary Education','Vocational Education and Training',
+                                                                                'Lifelong Learning'))
+
+# Reformat year
+rbf_data$`Fiscal Year` <- sub("^", "FY", rbf_data$`Fiscal Year` %% 100)
+dli_data$`Fiscal Year` <- sub("^", "FY", dli_data$`Fiscal Year` %% 100)
+
+# Restructure the Lending Instrument Variable
+rbf_data$`Lending Instrument` <- ifelse(rbf_data$`Lending Instrument` == "IPF/DLIs", "IBF with DLIs",
+                                        ifelse(rbf_data$`Lending Instrument` == "IPF/PBC", "IBF with PBCs","The Same")) 
+rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","The Same"))
+
+# Reorder income level
+rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
+dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
+
 
 shinyServer = function(input, output, session) {
   observe({
@@ -104,7 +122,7 @@ shinyServer = function(input, output, session) {
                    escape = FALSE,
                    extensions = c('Buttons', 'FixedColumns', "FixedHeader"), 
                    rownames = F,
-                 
+
                    options=list(
                      dom = 'Bfrtip',
                      paging = TRUE,
@@ -115,7 +133,9 @@ shinyServer = function(input, output, session) {
                      scroller = TRUE
                      #scrollX = T
                      #scrollY = T
-                   ) 
+                   )
+                   
+                   
     
                   #,
                   #   callback=JS("table.on( 'order.dt search.dt', function () {
