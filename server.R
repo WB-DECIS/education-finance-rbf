@@ -228,6 +228,8 @@ shinyServer = function(input, output, session) {
     
     output$table_dli <- renderDataTable({
       dli_data_table <- dli_data %>%
+        mutate(`Value of DLI (in mln)` = round(`Value of DLI (in mln)`,2)) %>%
+        mutate(`Value of DLR (mln)` = round(`Value of DLR (mln)`,2)) %>%
         filter(region_name %in% input$region_dli) %>%
         filter(income_name %in% input$income_dli) %>%
         filter(Country %in% input$country_dli) %>%
@@ -235,14 +237,34 @@ shinyServer = function(input, output, session) {
         filter(`Level of Education`%in% input$edu_dli)%>% 
         filter(`Focus area` %in% input$focus_dli)%>% 
         filter(Topic %in% input$topic_dli)%>%
-          select(Country_original, region_name, income_name, 
-                 `Level of Education`, `Lending Instrument`,
-                 `Focus area`, Topic, DLI, `DLI/DLR`,
+          select(`Project ID`,
+                 Country_original, 
+                 region_name, 
+                 income_name, 
+                 `Lending Instrument`,
+                 `Fiscal Year`,
+                 `Level of Education`, 
+                 `Focus area`, 
+                 Topic, 
+                 DLI, 
+                 `DLI/DLR`,
                  `Value of DLI (in mln)`,
-                 `Value of DLR (mln)`, `Share of total RBF for DLI`,
-                 `Chain Position`, `Formula/Calculation`, `Verification agency type`)%>%
-      rename("Region" = region_name, "Income" = income_name,
-             "Country" = Country_original)
+                 `Value of DLR (mln)`, 
+                 `Share of total RBF for DLI`,
+                 Scalability,
+                 `Chain Position`, 
+                 `Formula/Calculation`, 
+                 `Verification agency type`,
+                 `Verification source`,
+                 Restructuring) %>%
+      rename("Region" = region_name, 
+             "Income Level" = income_name,
+             "Country" = Country_original,
+             "Disbursement-linked Indicators (DLIs)" = DLI,
+             "Value of DLI (in million USD)" = `Value of DLI (in mln)`,
+             "Value of DLR (in million USD)" = `Value of DLR (mln)`, 
+             "Share of total RBF for this DLI" = `Share of total RBF for DLI`
+             )
       
         # unit.scale = function(x) (x - 0) / (1 - 0)
         # formattable(dli_data_table, align=c("l","l","l","l","l","l","l","l", "r", "r", "r", "r"),
@@ -262,10 +284,12 @@ shinyServer = function(input, output, session) {
                       paging = FALSE,
                       fixedHeader=TRUE,
                       fixedColumns = list(leftColumns = 1),
-                      buttons = c('copy', 'csv', 'excel')
+                      buttons = c('copy', 'csv', 'excel'),
+                      columnDefs = list(
+                        list(className = 'dt-center', targets = '_all'))
                   ) 
                       ) %>% 
-        formatPercentage(c("Share of total RBF for DLI"), 2)
+        formatPercentage(c("Share of total RBF for this DLI"), 2)
  
        })
  
