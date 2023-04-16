@@ -30,7 +30,7 @@ dli_data$`Fiscal Year` <- sub("^", "FY", dli_data$`Fiscal Year` %% 100)
 # Restructure the Lending Instrument Variable
 rbf_data$`Lending Instrument` <- ifelse(rbf_data$`Lending Instrument` == "IPF/DLIs", "IBF with DLIs",
                                         ifelse(rbf_data$`Lending Instrument` == "IPF/PBC", "IBF with PBCs","The Same")) 
-rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","The Same"))
+rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","PforR"))
 
 # Reorder income level
 rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
@@ -74,7 +74,7 @@ ui <-  shinyUI(
                                      multiple = TRUE)
                   ),
                   column(width = 4,
-                         pickerInput("income_rbf", "Income:",
+                         pickerInput("income_rbf", "Income Level:",
                                      choices = levels(factor(temp)),
                                      #selected = c('Lower middle income', "Low income", "middle income"),
                                      selected = levels(factor(temp)),

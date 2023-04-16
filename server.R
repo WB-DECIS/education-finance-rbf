@@ -7,6 +7,7 @@ library(tidyverse)
 library(shinycssloaders)
 library(shinyWidgets)
 library("formattable")
+library(dplyr)
 
 #library(flextable)
 #library(plotly)
@@ -27,11 +28,14 @@ dli_data$`Fiscal Year` <- sub("^", "FY", dli_data$`Fiscal Year` %% 100)
 # Restructure the Lending Instrument Variable
 rbf_data$`Lending Instrument` <- ifelse(rbf_data$`Lending Instrument` == "IPF/DLIs", "IBF with DLIs",
                                         ifelse(rbf_data$`Lending Instrument` == "IPF/PBC", "IBF with PBCs","The Same")) 
-rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","The Same"))
+rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","PforR"))
 
 # Reorder income level
 rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
+
+
+    
 
 
 shinyServer = function(input, output, session) {
@@ -106,14 +110,16 @@ shinyServer = function(input, output, session) {
              `IBRD/IDA Commit Amt`, `RBF Amt IBRD/IDA`, `% of IBR/IDA Commitment as RBF`,
              `TF Amt`, `RBF Amt TF`, `% of Trust Fund Commitment as RBF`,
              PDO) %>%
-      rename("Region" = region_name, "Income" = income_name,
+      rename("Region" = region_name, "Income Level" = income_name,
              "Country" = Country_original, "Project Name" =`Project Title`, 
              "Fiscal Year of Approval"= `Fiscal Year`, 
              "Project Development Objective (PDO)" = PDO,
              "IBRD/IDA Commitment" = `IBRD/IDA Commit Amt`,
              "RBF Commitment from IBRD/IDA" = `RBF Amt IBRD/IDA`,
              "Trust Fund Commitment" = `TF Amt`,
-             "RBF Commitment from Trust Fund" =  `RBF Amt TF`)
+             "RBF Commitment from Trust Fund" =  `RBF Amt TF`,
+             "% of Total Commitment as RBF" = `% of Project RBF`
+             )
   
   
     #formattable(rbf_data_table)
@@ -122,6 +128,7 @@ shinyServer = function(input, output, session) {
                    escape = FALSE,
                    extensions = c('Buttons', 'FixedColumns', "FixedHeader"), 
                    rownames = F,
+                   caption = "All committed amounts are expressed in millions of US dollars and dated as of April 30, 2021.",
 
                    options=list(
                      dom = 'Bfrtip',
@@ -130,7 +137,9 @@ shinyServer = function(input, output, session) {
                      buttons = c('copy', 'csv', 'excel'),
                      fixedHeader = TRUE,
                      fixedColumns = list(leftColumns = 1),
-                     scroller = TRUE
+                     scroller = TRUE,
+                     columnDefs = list(list(className = 'dt-center', targets = '_all'),
+                                       list(targets = 17, width = "200px"))
                      #scrollX = T
                      #scrollY = T
                    )
@@ -141,7 +150,7 @@ shinyServer = function(input, output, session) {
                   #   callback=JS("table.on( 'order.dt search.dt', function () {
                   #                                table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
                   #                                      cell.innerHTML = i+1;});}).draw();")
-    )%>%formatPercentage(c("% of Project RBF", "% of IBR/IDA Commitment as RBF", "% of Trust Fund Commitment as RBF"), 2)
+    )%>%formatPercentage(c("% of Total Commitment as RBF", "% of IBR/IDA Commitment as RBF", "% of Trust Fund Commitment as RBF"), 2)
   })
   
   output$log_details0 <- shiny::renderUI({
@@ -167,9 +176,9 @@ shinyServer = function(input, output, session) {
   shiny::observeEvent(input$log_details2, {
     shiny::showModal(shiny::modalDialog(
       title = span("", style = "font-weight: bold; color:black; font-size:20px"),
-      p(HTML(paste0('<ul><b>Investment Project Financing</b> with Performance-Based Conditions (IPF-PBC) is a form of IPF in which all or part of the disbursements are conditional on the achievement of PBCs. For projects approved before January 2020, PBCs were referred to as Disbursement Linked Indicators. </ul>
-                    <ul><b>Program-for-Results Financing (PforR)</b> uses partner countries and helps to improve the design and implementation of their development programs and achieve lasting results by strengthening institutions and building capacity.  PforR Financing proceeds are disbursed upon the achievement of verified results specified as disbursement-linked indicators.</ul>
-                    <ul><b>Disbursement-Linked Indicators.</b> The DLIs are specific, measurable, and verifiable indicators related to and/or derived from the PforR Program development objectives and the results framework. DLIs may be expressed as outcomes, outputs, intermediate outcomes or outputs, process indicators, or financing indicators. DLIs may also be defined as actions or process results deemed critical for strengthening performance under the PforR Program (this could include actions for improving fiduciary, social and environmental issues and/or monitoring and evaluation), or as indicators of key institutional changes.</ul>'))),
+      p(HTML(paste0('<ul><b>Investment Project Financing with Performance-Based Conditions (IPF with PBCs) </b> is a form of IPF in which all or part of the disbursements are conditional on the achievement of PBCs. For projects approved before January 2020, PBCs were referred to as Disbursement Linked Indicators (DLIs).  </ul>
+                    <ul><b>Investment Project Financing with Disbursement-Linked Indicators (IPF with DLIs). </b> The DLIs are specific, measurable, and verifiable indicators related to and/or derived from project development objectives and the results framework. DLIs may be expressed as outcomes, outputs, intermediate outcomes or outputs, process indicators, or financing indicators. DLIs may also be defined as actions or process results deemed critical for strengthening performance. Since 2020, IPFs with DLIs have been called IPFs with PBCs. </ul>
+                    <ul><b> Program-for-Results Financing (PforR) </b> aims to help partner countries to improve the design and implementation of their development programs and achieve lasting results by strengthening institutions and building capacity. PforR Financing proceeds are disbursed upon the achievement of verified results specified as disbursement-linked indicators. </ul>'))),
       easyClose = TRUE,
       footer = NULL
     ))
@@ -239,14 +248,10 @@ shinyServer = function(input, output, session) {
                       fixedHeader=TRUE,
                       fixedColumns = list(leftColumns = 1),
                       buttons = c('copy', 'csv', 'excel')
-                      #,
-                      # scroller = T,
-                      # scrollX = F,
-                      # scrollY = T
                   ) 
-                      )%>%formatPercentage(c("Share of total RBF for DLI"), 2)
-    })
-    
-
-    
+                      ) %>% 
+        formatPercentage(c("Share of total RBF for DLI"), 2)
+ 
+       })
+ 
 }
