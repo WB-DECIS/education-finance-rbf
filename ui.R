@@ -36,6 +36,20 @@ rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("
 rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 
+# Reorder Focus Area
+dli_data$`Focus area` <- factor(dli_data$`Focus area`, levels = c("Education Access and Equity", "Education Facilities",
+                                                                  "Education Financing", 
+                                                                  "Education Governance School Based Management",
+                                                                  "Private Sector Delivery of Education", 
+                                                                  "Science and Technology",
+                                                                  "Skills Development", "Standards Curriculum and Textbooks",
+                                                                  "Student Assessment","Teachers", "Other"))
+# Clean up rbf_data
+rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
+rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
+rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
+
+
 ui <-  shinyUI(
     
         navbarPage("Results-Based Financing in Education",
@@ -204,8 +218,8 @@ ui <-  shinyUI(
             column(4,
                    pickerInput(inputId="focus_dli",
                                label="Focus Area:",
-                               choices = c(sort(unique(dli_data$`Focus area`))),
-                               selected = c(sort(unique(dli_data$`Focus area`))),
+                               choices = levels(dli_data$`Focus area`),
+                               selected = levels(dli_data$`Focus area`),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE
                    )

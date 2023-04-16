@@ -34,9 +34,20 @@ rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("
 rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 
+# Reorder Focus Area
+dli_data$`Focus area` <- factor(dli_data$`Focus area`, levels = c("Education Access and Equity", "Education Facilities",
+                                                                  "Education Financing", 
+                                                                  "Education Governance School Based Management",
+                                                                  "Private Sector Delivery of Education", 
+                                                                  "Science and Technology",
+                                                                  "Skills Development", "Standards Curriculum and Textbooks",
+                                                                  "Student Assessment","Teachers", "Other"))
 
+# Clean up rbf_data
+rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
+rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
+rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
     
-
 
 shinyServer = function(input, output, session) {
   observe({
@@ -90,10 +101,6 @@ shinyServer = function(input, output, session) {
     # })
   
   output$table_rbf <- renderDataTable({
-    #renderFormattable({
-    rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
-    rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
-    rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
     
     rbf_data_table <- rbf_data %>%
       filter(region_name %in% input$region_rbf) %>%
@@ -102,16 +109,31 @@ shinyServer = function(input, output, session) {
       filter(`Fiscal Year` %in% input$fiscal_rbf) %>% 
       filter(`Level of Education` %in% input$edu_rbf) %>% 
       filter(`Lending Instrument` %in% input$lending_rbf) %>% 
-      select(`Project Title`, `Project ID`,Country_original,
-             region_name, income_name,
+      select(`Project Title`, 
+             `Project ID`,
+             Country_original,
+             region_name, 
+             income_name,
              `Lending Instrument`, 
-             `Fiscal Year`, `Level of Education`,
-             `Total commitment`,`Total RBF commitment`,`% of Project RBF`, 
-             `IBRD/IDA Commit Amt`, `RBF Amt IBRD/IDA`, `% of IBR/IDA Commitment as RBF`,
-             `TF Amt`, `RBF Amt TF`, `% of Trust Fund Commitment as RBF`,
-             PDO) %>%
-      rename("Region" = region_name, "Income Level" = income_name,
-             "Country" = Country_original, "Project Name" =`Project Title`, 
+             `Fiscal Year`, 
+             `Closing date`,
+             `Level of Education`,
+             `Lending Instrument`,
+             PDO,
+             `Total commitment`,
+             `Total RBF commitment`,
+             `% of Project RBF`, 
+             `IBRD/IDA Commit Amt`, 
+             `RBF Amt IBRD/IDA`, 
+             `% of IBR/IDA Commitment as RBF`,
+             `TF Amt`, 
+             `RBF Amt TF`, 
+             `% of Trust Fund Commitment as RBF`
+             ) %>%
+      rename("Region" = region_name, 
+             "Income Level" = income_name,
+             "Country" = Country_original, 
+             "Project Name" =`Project Title`, 
              "Fiscal Year of Approval"= `Fiscal Year`, 
              "Project Development Objective (PDO)" = PDO,
              "IBRD/IDA Commitment" = `IBRD/IDA Commit Amt`,
@@ -120,37 +142,30 @@ shinyServer = function(input, output, session) {
              "RBF Commitment from Trust Fund" =  `RBF Amt TF`,
              "% of Total Commitment as RBF" = `% of Project RBF`
              )
-  
-  
-    #formattable(rbf_data_table)
-     DT::datatable(rbf_data_table,
-                   class='cell-border stripe',
-                   escape = FALSE,
-                   extensions = c('Buttons', 'FixedColumns', "FixedHeader"), 
-                   rownames = F,
-                   caption = "All committed amounts are expressed in millions of US dollars and dated as of April 30, 2021.",
-
-                   options=list(
-                     dom = 'Bfrtip',
-                     paging = TRUE,
-                     pageLength = 20,
-                     buttons = c('copy', 'csv', 'excel'),
-                     fixedHeader = TRUE,
-                     fixedColumns = list(leftColumns = 1),
-                     scroller = TRUE,
-                     columnDefs = list(list(className = 'dt-center', targets = '_all'),
-                                       list(targets = 17, width = "200px"))
-                     #scrollX = T
-                     #scrollY = T
-                   )
-                   
-                   
     
-                  #,
-                  #   callback=JS("table.on( 'order.dt search.dt', function () {
-                  #                                table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                  #                                      cell.innerHTML = i+1;});}).draw();")
-    )%>%formatPercentage(c("% of Total Commitment as RBF", "% of IBR/IDA Commitment as RBF", "% of Trust Fund Commitment as RBF"), 2)
+  
+     DT::datatable(rbf_data_table,
+             
+             class='cell-border stripe',
+             escape = FALSE,
+             extensions = c('Buttons', 'FixedColumns', "FixedHeader"), 
+             rownames = F,
+             caption = "All committed amounts are expressed in millions of US dollars and dated as of April 30, 2021.",
+             options=list(
+               autoWidth = FALSE,
+               dom = 'Bfrtip',
+               paging = FALSE,
+               pageLength = 20,
+               buttons = c('copy', 'csv', 'excel'),
+               fixedHeader = TRUE,
+               fixedColumns = list(leftColumns = 1),
+               scroller = TRUE,
+               columnDefs = list(
+                list(className = 'dt-center', targets = '_all'),
+                list(width = '400px', targets = 10))
+             )
+    ) %>%
+       formatPercentage(c("% of Total Commitment as RBF", "% of IBR/IDA Commitment as RBF", "% of Trust Fund Commitment as RBF"), 2)
   })
   
   output$log_details0 <- shiny::renderUI({
