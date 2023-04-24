@@ -9,44 +9,10 @@ library(shinyWidgets)
 library("formattable")
 library(dplyr)
 
-#library(flextable)
-#library(plotly)
 
+# Load Data
 rbf_data <- readRDS("data/rbf_data.rds")
 dli_data <- readRDS("data/dli_data.rds")
-
-dli_data$`Focus area` <- gsub("_", " ", dli_data$`Focus area`)
-dli_data$`Level of Education` <- factor(dli_data$`Level of Education`, levels=c('Early Child Development', 'Primary Education', 
-                                                                                'Secondary Education', 'Primary and Secondary Education',
-                                                                                'Tertiary Education','Vocational Education and Training',
-                                                                                'Lifelong Learning'))
-
-# Reformat year
-rbf_data$`Fiscal Year` <- sub("^", "FY", rbf_data$`Fiscal Year` %% 100)
-dli_data$`Fiscal Year` <- sub("^", "FY", dli_data$`Fiscal Year` %% 100)
-
-# Restructure the Lending Instrument Variable
-rbf_data$`Lending Instrument` <- ifelse(rbf_data$`Lending Instrument` == "IPF/DLIs", "IBF with DLIs",
-                                        ifelse(rbf_data$`Lending Instrument` == "IPF/PBC", "IBF with PBCs","The Same")) 
-rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","PforR"))
-
-# Reorder income level
-rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
-dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
-
-# Reorder Focus Area
-dli_data$`Focus area` <- factor(dli_data$`Focus area`, levels = c("Education Access and Equity", "Education Facilities",
-                                                                  "Education Financing", 
-                                                                  "Education Governance School Based Management",
-                                                                  "Private Sector Delivery of Education", 
-                                                                  "Science and Technology",
-                                                                  "Skills Development", "Standards Curriculum and Textbooks",
-                                                                  "Student Assessment","Teachers", "Other"))
-
-# Clean up rbf_data
-rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
-rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
-rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
     
 
 shinyServer = function(input, output, session) {
@@ -100,13 +66,15 @@ shinyServer = function(input, output, session) {
     #     ) 
     # })
   
-  output$table_rbf <- renderDataTable({
+  
+  #output$table_rbf <- renderDataTable({
+  output$table_rbf <- renderDT({
     
     rbf_data_table <- rbf_data %>%
       filter(region_name %in% input$region_rbf) %>%
       filter(income_name %in% input$income_rbf) %>%
       filter(Country %in% input$country_rbf) %>% 
-      filter(`Fiscal Year` %in% input$fiscal_rbf) %>% 
+      filter(`Fiscal Year of Approval` %in% input$fiscal_rbf) %>% 
       filter(`Level of Education` %in% input$edu_rbf) %>% 
       filter(`Lending Instrument` %in% input$lending_rbf) %>% 
       select(`Project Title`, 
@@ -115,7 +83,7 @@ shinyServer = function(input, output, session) {
              region_name, 
              income_name,
              `Lending Instrument`, 
-             `Fiscal Year`, 
+             `Fiscal Year of Approval`, 
              `Closing date`,
              `Level of Education`,
              `Lending Instrument`,
@@ -134,14 +102,16 @@ shinyServer = function(input, output, session) {
              "Income Level" = income_name,
              "Country" = Country_original, 
              "Project Name" =`Project Title`, 
-             "Fiscal Year of Approval"= `Fiscal Year`, 
+            # "Fiscal Year of Approval"= `Fiscal Year`, 
              "Project Development Objective (PDO)" = PDO,
              "IBRD/IDA Commitment" = `IBRD/IDA Commit Amt`,
              "RBF Commitment from IBRD/IDA" = `RBF Amt IBRD/IDA`,
              "Trust Fund Commitment" = `TF Amt`,
              "RBF Commitment from Trust Fund" =  `RBF Amt TF`,
-             "% of Total Commitment as RBF" = `% of Project RBF`
+             "% of Total Commitment as RBF" = `% of Project RBF`,
+             "% of IBRD/IDA Commitment as RBF" = `% of IBR/IDA Commitment as RBF`
              )
+    
     
   
      DT::datatable(rbf_data_table,
@@ -165,7 +135,7 @@ shinyServer = function(input, output, session) {
                 list(width = '400px', targets = 10))
              )
     ) %>%
-       formatPercentage(c("% of Total Commitment as RBF", "% of IBR/IDA Commitment as RBF", "% of Trust Fund Commitment as RBF"), 2)
+       formatPercentage(c("% of Total Commitment as RBF", "% of IBRD/IDA Commitment as RBF", "% of Trust Fund Commitment as RBF"), 2)
   })
   
   output$log_details0 <- shiny::renderUI({
@@ -193,7 +163,10 @@ shinyServer = function(input, output, session) {
       title = span("", style = "font-weight: bold; color:black; font-size:20px"),
       p(HTML(paste0('<ul><b>Investment Project Financing with Performance-Based Conditions (IPF with PBCs) </b> is a form of IPF in which all or part of the disbursements are conditional on the achievement of PBCs. For projects approved before January 2020, PBCs were referred to as Disbursement Linked Indicators (DLIs).  </ul>
                     <ul><b>Investment Project Financing with Disbursement-Linked Indicators (IPF with DLIs). </b> The DLIs are specific, measurable, and verifiable indicators related to and/or derived from project development objectives and the results framework. DLIs may be expressed as outcomes, outputs, intermediate outcomes or outputs, process indicators, or financing indicators. DLIs may also be defined as actions or process results deemed critical for strengthening performance. Since 2020, IPFs with DLIs have been called IPFs with PBCs. </ul>
-                    <ul><b> Program-for-Results Financing (PforR) </b> aims to help partner countries to improve the design and implementation of their development programs and achieve lasting results by strengthening institutions and building capacity. PforR Financing proceeds are disbursed upon the achievement of verified results specified as disbursement-linked indicators. </ul>'))),
+                    <ul><b> Program-for-Results Financing (PforR) </b> aims to help partner countries to improve the design and implementation of their development programs and achieve lasting results by strengthening institutions and building capacity. PforR Financing proceeds are disbursed upon the achievement of verified results specified as disbursement-linked indicators. </ul>
+                    <ul> <b> Sources: </b>
+                    <ul> Guidance: <a href="https://www.worldbank.org/en/what-we-do/products-and-services/financing-instruments/investment-project-financing" target="blank"> Investment Project Financing with Performance-Based Conditions </a> </ul>
+                    <ul> <a href ="https://policies.worldbank.org/en/policies/all/ppfdetail/dad74959-885e-4d01-ab19-1e77f70adbe0" target="blank"> Bank directive: Program-for-results financing. </a>  Revised on March 8, 2022 </ul>'))),
       easyClose = TRUE,
       footer = NULL
     ))
@@ -233,7 +206,7 @@ shinyServer = function(input, output, session) {
         filter(region_name %in% input$region_dli) %>%
         filter(income_name %in% input$income_dli) %>%
         filter(Country %in% input$country_dli) %>%
-        filter(`Fiscal Year` %in% input$fiscal_dli) %>% 
+        filter(`Fiscal Year of Approval` %in% input$fiscal_dli) %>% 
         filter(`Level of Education`%in% input$edu_dli)%>% 
         filter(`Focus area` %in% input$focus_dli)%>% 
         filter(Topic %in% input$topic_dli)%>%
@@ -242,7 +215,7 @@ shinyServer = function(input, output, session) {
                  region_name, 
                  income_name, 
                  `Lending Instrument`,
-                 `Fiscal Year`,
+                 `Fiscal Year of Approval`,
                  `Level of Education`, 
                  `Focus area`, 
                  Topic, 

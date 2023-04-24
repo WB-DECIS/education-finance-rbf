@@ -9,46 +9,9 @@ library(shinycssloaders)
 library(shinyWidgets)
 library("formattable")
 
-
+# Load Data
 rbf_data <- readRDS("data/rbf_data.rds")
 dli_data <- readRDS("data/dli_data.rds")
-dli_data$`Focus area` <- gsub("_", " ", dli_data$`Focus area`)
-dli_data$`Level of Education` <- factor(dli_data$`Level of Education`, levels=c('Early Child Development', 'Primary Education', 
-                                                                    'Secondary Education', 'Primary and Secondary Education',
-                                                                    'Tertiary Education','Vocational Education and Training',
-                                                                    'Lifelong Learning'))
-
-
-# set the order of income groups
-temp = factor(unique(as.character(rbf_data$income_name)), 
-              levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
-
-# Reformat year
-rbf_data$`Fiscal Year` <- sub("^", "FY", rbf_data$`Fiscal Year` %% 100) # current dataset has no "FY", this line can be removed after the data update
-dli_data$`Fiscal Year` <- sub("^", "FY", dli_data$`Fiscal Year` %% 100)
-
-# Restructure the Lending Instrument Variable
-rbf_data$`Lending Instrument` <- ifelse(rbf_data$`Lending Instrument` == "IPF/DLIs", "IBF with DLIs",
-                                        ifelse(rbf_data$`Lending Instrument` == "IPF/PBC", "IBF with PBCs","The Same")) 
-rbf_data$`Lending Instrument` <- factor(rbf_data$`Lending Instrument`,levels=c("IBF with PBCs","IBF with DLIs","PforR"))
-
-# Reorder income level
-rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
-dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
-
-# Reorder Focus Area
-dli_data$`Focus area` <- factor(dli_data$`Focus area`, levels = c("Education Access and Equity", "Education Facilities",
-                                                                  "Education Financing", 
-                                                                  "Education Governance School Based Management",
-                                                                  "Private Sector Delivery of Education", 
-                                                                  "Science and Technology",
-                                                                  "Skills Development", "Standards Curriculum and Textbooks",
-                                                                  "Student Assessment","Teachers", "Other"))
-# Clean up rbf_data
-rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
-rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
-rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
-
 
 ui <-  shinyUI(
     
@@ -195,8 +158,8 @@ ui <-  shinyUI(
             ),
             column(width = 4,
                    pickerInput("fiscal_dli", "Fiscal Year of Approval:",
-                               choices = c(sort(unique(dli_data$`Fiscal Year`))),
-                               selected = c(sort(unique(as.character(dli_data$`Fiscal Year`)))),
+                               choices = c(sort(unique(dli_data$`Fiscal Year of Approval`))),
+                               selected = c(sort(unique(as.character(dli_data$`Fiscal Year of Approval`)))),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE),
             ),
