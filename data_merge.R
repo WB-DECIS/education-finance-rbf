@@ -35,26 +35,17 @@ df_rbf_new <- merge(df_rbf, dat, by='country_id', all.x = TRUE) %>%
   rename(Country = Country.x)
 
 
-id_edu <- distinct(df_dli[, c("Project ID", "Level of Education")])
+#id_edu <- distinct(df_dli[, c("Project ID", "Level of Education")])
 #df_rbf_new <- merge(x = df_rbf_new, y = id_edu[, c("Project ID", "Level of Education")], 
 #                    by = "Project ID", all.x = TRUE)
 
-df_rbf_new <- merge(x = df_rbf_new, y = id_edu, by = "Project ID", all.x = TRUE)
+#df_rbf_new <- merge(x = df_rbf_new, y = id_edu, by = "Project ID", all.x = TRUE)
 
 
-id_fiscal <- distinct(df_rbf_new[, c("Project ID", "Fiscal Year", "country_id", "Country")])
-#df_dli_new <- merge(x = df_dli, y = id_fiscal[, c("Project ID", "Fiscal Year", "country_id")], 
-#                   by = "Project ID", all.x = TRUE)
+id_fiscal <- distinct(df_rbf_new[, c("Project Title", "Project ID", "Fiscal Year", "country_id", "Country", "Link")])
+
 df_dli_new <- merge(x = df_dli, y = id_fiscal, by = "Project ID", all.x = TRUE)
 
-#df_dli_new <- stringdist_join(df_dli_new, dat, 
-#                          by='country_id', #match based on team
-#                          mode='left', #use left join
-#                          method = "jw", #use jw distance metric
-#                          max_dist=0.05, 
-#                          distance_col='dist')%>%
-#  select(-country_id.y, -X) %>%
-#  rename(country_id = country_id.x)
 
 df_dli_new <- merge(df_dli_new, dat, by='country_id', all.x = TRUE) %>%
   select( -X, -Country.y) %>%

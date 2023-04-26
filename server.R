@@ -75,7 +75,7 @@ shinyServer = function(input, output, session) {
       filter(income_name %in% input$income_rbf) %>%
       filter(Country %in% input$country_rbf) %>% 
       filter(`Fiscal Year of Approval` %in% input$fiscal_rbf) %>% 
-      filter(`Level of Education` %in% input$edu_rbf) %>% 
+      #filter(`Level of Education` %in% input$edu_rbf) %>% 
       filter(`Lending Instrument` %in% input$lending_rbf) %>% 
       select(`Project Title`, 
              `Project ID`,
@@ -85,7 +85,7 @@ shinyServer = function(input, output, session) {
              `Lending Instrument`, 
              `Fiscal Year of Approval`, 
              `Closing date`,
-             `Level of Education`,
+             #`Level of Education`,
              `Lending Instrument`,
              PDO,
              `Total commitment`,
@@ -131,8 +131,7 @@ shinyServer = function(input, output, session) {
                fixedColumns = list(leftColumns = 1),
                scroller = TRUE,
                columnDefs = list(
-                list(className = 'dt-center', targets = '_all'),
-                list(width = '400px', targets = 10))
+                list(className = 'dt-center', targets = '_all'))
              )
     ) %>%
        formatPercentage(c("% of Total Commitment as RBF", "% of IBRD/IDA Commitment as RBF", "% of Trust Fund Commitment as RBF"), 2)
@@ -210,7 +209,8 @@ shinyServer = function(input, output, session) {
         filter(`Level of Education`%in% input$edu_dli)%>% 
         filter(`Focus area` %in% input$focus_dli)%>% 
         filter(Topic %in% input$topic_dli)%>%
-          select(`Project ID`,
+          select(`Project Title`,
+                `Project ID`,
                  Country_original, 
                  region_name, 
                  income_name, 
@@ -230,7 +230,8 @@ shinyServer = function(input, output, session) {
                  `Verification agency type`,
                  `Verification source`,
                  Restructuring) %>%
-      rename("Region" = region_name, 
+      rename("Project Name" =`Project Title`, 
+            "Region" = region_name, 
              "Income Level" = income_name,
              "Country" = Country_original,
              "Disbursement-linked Indicators (DLIs)" = DLI,
@@ -261,8 +262,8 @@ shinyServer = function(input, output, session) {
                       columnDefs = list(
                         list(className = 'dt-center', targets = '_all'))
                   ) 
-                      ) %>% 
-        formatPercentage(c("Share of total RBF for this DLI"), 2)
+                      ) #%>% 
+        #formatPercentage(c("Share of total RBF for this DLI"), 2)
  
        })
  

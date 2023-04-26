@@ -88,18 +88,18 @@ ui <-  shinyUI(
                   # shiny::column(1, align = "right",
                   #               shiny::uiOutput(("log_details0"))
                   # ),
-                column(width = 4,
-                       pickerInput(inputId="edu_rbf",
-                              label="Level of Education:", 
-                              choices = levels(dli_data$`Level of Education`),
-                              selected = levels(dli_data$`Level of Education`),
+                #column(width = 4,
+                #       pickerInput(inputId="edu_rbf",
+                #              label="Level of Education:", 
+                #              choices = levels(dli_data$`Level of Education`),
+                #              selected = levels(dli_data$`Level of Education`),
                               # selected = c("Early Child Development", "Primary and Secondary Education", 
                               #              "Tertiary Education"),
                               # selected = c(sort(unique(rbf_data$`Level of Education`))),
-                              multiple = TRUE,
-                              options = list(`actions-box` = TRUE)
-                  )
-                ),
+                #              multiple = TRUE,
+               #               options = list(`actions-box` = TRUE)
+               #   )
+               # ),
                   column(width = 3, 
                          pickerInput("lending_rbf", "Lending Instrument:",
                                      choices = levels(rbf_data$`Lending Instrument`),

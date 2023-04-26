@@ -28,15 +28,6 @@ rbf_data$`Closing date` <- format(rbf_data$`Closing date`, "%Y-%m-%d")
                                                                                   'Tertiary Education',
                                                                                   'Vocational Education and Training',
                                                                                   'Lifelong Learning'))
-  rbf_data$`Level of Education` <- ifelse(rbf_data$`Level of Education` == 'Early Child Development', 
-                                          'Early Childhood Development', rbf_data$`Level of Education`)
-  rbf_data$`Level of Education` <- factor(rbf_data$`Level of Education`, levels=c('Early Childhood Development', 
-                                                                                  'Primary Education', 
-                                                                                  'Secondary Education', 
-                                                                                  'Primary and Secondary Education',
-                                                                                  'Tertiary Education',
-                                                                                  'Vocational Education and Training',
-                                                                                  'Lifelong Learning'))
   
   # Reformat year
   rbf_data$`Fiscal Year of Approval` <- sub("^", "FY", rbf_data$`Fiscal Year` %% 100) 
@@ -58,8 +49,13 @@ rbf_data$`Closing date` <- format(rbf_data$`Closing date`, "%Y-%m-%d")
   
   # Clean up rbf_data
   rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
+  dli_data$`Project ID` = paste0("<a href='",dli_data$Link,"'target=\'_blank\'>",dli_data$`Project ID`,"</a>")
   rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
   rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
+  
+  # In DLI table, make Share of Total RBF for DLI "Not Applicable" if not DLI
+  dli_data$`Share of total RBF for DLI` <- ifelse(dli_data$`DLI/DLR` != "DLI", "Not Applicable",  
+                                                  paste(round((dli_data$`Share of total RBF for DLI`*100),2),"%"))
 
 
 saveRDS(rbf_data, "data/rbf_data.rds")
