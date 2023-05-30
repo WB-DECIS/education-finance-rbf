@@ -8,6 +8,7 @@ library(shinycssloaders)
 #library(highcharter)
 library(shinyWidgets)
 library("formattable")
+library(shinythemes)
 
 # Load Data
 rbf_data <- readRDS("data/rbf_data.rds")
@@ -18,7 +19,8 @@ ui <-  shinyUI(
         navbarPage("Results-Based Financing in Education",
                #theme = "R-shiny-style-cwon-tim.css",
                #theme = "custom_hd.css",
-                theme = "bootstrap",
+               #theme = "bootstrap",
+               theme = shinytheme("united"),
                # add tooltips
                tags$script(HTML('
            $( document ).on("shiny:sessioninitialized", function(event) {
