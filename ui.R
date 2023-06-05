@@ -13,6 +13,8 @@ library(shinythemes)
 # Load Data
 rbf_data <- readRDS("data/rbf_data.rds")
 dli_data <- readRDS("data/dli_data.rds")
+temp = factor(unique(as.character(rbf_data$income_name)), 
+              levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 
 ui <-  shinyUI(
     

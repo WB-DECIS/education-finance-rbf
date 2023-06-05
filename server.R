@@ -13,6 +13,8 @@ library(dplyr)
 # Load Data
 rbf_data <- readRDS("data/rbf_data.rds")
 dli_data <- readRDS("data/dli_data.rds")
+temp = factor(unique(as.character(rbf_data$income_name)), 
+              levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
     
 
 shinyServer = function(input, output, session) {
@@ -122,9 +124,9 @@ shinyServer = function(input, output, session) {
              rownames = F,
              caption = "All committed amounts are expressed in millions of US dollars and dated as of April 30, 2021.",
              options=list(
-               autoWidth = FALSE,
-               dom = 'Bfrtip',
-               paging = FALSE,
+               autoWidth = TRUE,
+               dom = 't',
+               paging = TRUE,
                pageLength = 20,
                buttons = c('copy', 'csv', 'excel'),
                fixedHeader = TRUE,
@@ -248,21 +250,38 @@ shinyServer = function(input, output, session) {
         #                 
         #             ))
       
-      DT::datatable(dli_data_table,
-                    class='cell-border stripe',
-                    escape = FALSE,
-                    extensions = c ('Buttons', 'FixedHeader', 'FixedColumns'), 
-                    rownames = F,
-                    options=list(
-                      dom = 'Bfrtip',
-                      paging = FALSE,
-                      fixedHeader=TRUE,
-                      fixedColumns = list(leftColumns = 1),
-                      buttons = c('copy', 'csv', 'excel'),
-                      columnDefs = list(
-                        list(className = 'dt-center', targets = '_all'))
-                  ) 
-                      ) #%>% 
+      DT::datatable(
+        dli_data_table,
+        class = 'cell-border stripe hover',
+        rownames = FALSE,
+        callback = JS(paste0("
+          var tips = ", jsonlite::toJSON(colnames(dli_data_table)), ",
+              header = table.columns().header();
+          for (var i = 0; i < tips.length; i++) {
+            $(header[i]).attr('title', tips[i]);
+          $(header[11]).attr('title', 'New tooltip for 12th column');
+          }
+        ")),
+        escape = FALSE,
+        extensions = c('Buttons', 'FixedHeader', 'FixedColumns'),
+        options = list(
+          dom = 't',
+          paging = TRUE,
+          pageLength = 20,
+          fixedHeader = TRUE,
+          fixedColumns = list(leftColumns = 1),
+          buttons = c('copy', 'csv', 'excel'),
+          scroller = TRUE,
+          autoWidth = TRUE,
+          columnDefs = list(
+            list(width = '200px', targets = 9),  # Adjusted to target the 10th column (0-indexed)
+            list(className = 'dt-center', targets = '_all')
+          )
+        )
+      )
+      
+      
+                       #%>% 
         #formatPercentage(c("Share of total RBF for this DLI"), 2)
  
        })

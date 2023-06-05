@@ -56,6 +56,9 @@ rbf_data$`Closing date` <- format(rbf_data$`Closing date`, "%Y-%m-%d")
   # In DLI table, make Share of Total RBF for DLI "Not Applicable" if not DLI
   dli_data$`Share of total RBF for DLI` <- ifelse(dli_data$`DLI/DLR` != "DLI", "Not Applicable",  
                                                   paste(round((dli_data$`Share of total RBF for DLI`*100),2),"%"))
+  
+  # Remove quotes from PDO string
+  rbf_data <- rbf_data %>% mutate(PDO = gsub('"','',PDO))
 
 
 saveRDS(rbf_data, "data/rbf_data.rds")
