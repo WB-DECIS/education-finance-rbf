@@ -51,7 +51,6 @@ shinyServer = function(input, output, session) {
       filter(income_name %in% input$income_rbf) %>%
       filter(Country %in% input$country_rbf) %>% 
       filter(`Fiscal Year of Approval` %in% input$fiscal_rbf) %>% 
-      #filter(`Level of Education` %in% input$edu_rbf) %>% 
       filter(`Lending Instrument` %in% input$lending_rbf) %>% 
       select(`Project Title`, 
              `Project ID`,
@@ -61,7 +60,6 @@ shinyServer = function(input, output, session) {
              `Lending Instrument`, 
              `Fiscal Year of Approval`, 
              `Closing date`,
-             #`Level of Education`,
              `Lending Instrument`,
              PDO,
              `Total commitment`,
@@ -78,7 +76,6 @@ shinyServer = function(input, output, session) {
              "Income Level" = income_name,
              "Country" = Country_original, 
              "Project Name" =`Project Title`, 
-            # "Fiscal Year of Approval"= `Fiscal Year`, 
              "Project Development Objective (PDO)" = PDO,
              "IBRD/IDA Commitment" = `IBRD/IDA Commit Amt`,
              "RBF Commitment from IBRD/IDA" = `RBF Amt IBRD/IDA`,
@@ -146,32 +143,6 @@ shinyServer = function(input, output, session) {
       footer = NULL
     ))
   })
-  
-    
-    
-    # output$bar <- renderHighchart({
-    #     #dat <- df %>% filter(Country %in% input$country)%>% 
-    #     # if (!("All" %in% input$country)) {
-    #     #     df1 <- df %>%
-    #     #         filter((Country %in% input$country)) 
-    #     # }  else {
-    #     #     df1 <- df
-    #     # }
-    #     
-    #   dat <- rbf_data %>%
-    #     filter(Region %in% input$region_d) %>%
-    #     filter(Country %in% input$country_d) %>%
-    #     filter(`Level of Education`%in% input$edu)%>% 
-    #     filter(`Focus area` %in% input$focus_area)%>% 
-    #     filter(Topic %in% input$topic)
-    #     
-    #     bar <- hchart(dat, 
-    #         type = "bar",
-    #         hcaes(x = DLI, y = `Value of DLI (in mln)`)
-    #         )
-    #         
-    #     
-    # })
     
     
     output$table_dli <- renderDataTable({
@@ -247,10 +218,6 @@ shinyServer = function(input, output, session) {
         )
       )
       
-      
-                       #%>% 
-        #formatPercentage(c("Share of total RBF for this DLI"), 2)
- 
        })
  
 }
