@@ -3,7 +3,6 @@ library(shiny)
 library(readxl)
 library(DT)
 library(tidyverse)
-#library(highcharter)
 library(shinycssloaders)
 library(shinyWidgets)
 library("formattable")
@@ -44,32 +43,7 @@ shinyServer = function(input, output, session) {
                       
     )
   })
-    # observe({
-    #     
-    #     focuslist <- unique(df[df$Country %in% input$country,
-    #                            # & 
-    #                            #     df$`Level of Education` %in% input$edulist,
-    #                            "Focus area"])
-    #     updateSelectInput(session, "focus_area",
-    #                       choices = focuslist, # update choices
-    #                       #selected = focuslist[1]
-    #                       ) 
-    # })
-    # 
-    # observe({
-    #     topiclist <- unique(df[df$`Focus area` %in% input$focus_area,
-    #                            # & 
-    #                            #   df$`Level of Education` %in% input$edulist & 
-    #                            #     df$Country %in% input$country, 
-    #                            "Topic"])
-    #     updateSelectInput(session, "topic",
-    #                       choices = topiclist, # update choices
-    #                       #selected = topiclist[1] 
-    #     ) 
-    # })
-  
-  
-  #output$table_rbf <- renderDataTable({
+
   output$table_rbf <- renderDT({
     
     rbf_data_table <- rbf_data %>%
@@ -242,13 +216,6 @@ shinyServer = function(input, output, session) {
              "Share of total RBF for this DLI" = `Share of total RBF for DLI`
              )
       
-        # unit.scale = function(x) (x - 0) / (1 - 0)
-        # formattable(dli_data_table, align=c("l","l","l","l","l","l","l","l", "r", "r", "r", "r"),
-        #             list(
-        #                 `Share of total RBF for DLI` = percent,
-        #                 `Share of total RBF for DLI`= color_bar("lightblue", fun = unit.scale)
-        #                 
-        #             ))
       
       DT::datatable(
         dli_data_table,
@@ -259,7 +226,7 @@ shinyServer = function(input, output, session) {
               header = table.columns().header();
           for (var i = 0; i < tips.length; i++) {
             $(header[i]).attr('title', tips[i]);
-          $(header[11]).attr('title', 'New tooltip for 12th column');
+          $(header[11]).attr('title', 'A Disbursement Linked Result (DLR) is a target or milestone of a DLI that must be achieved in order to receive disbursements.');
           }
         ")),
         escape = FALSE,
