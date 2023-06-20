@@ -147,7 +147,8 @@ shinyServer = function(input, output, session) {
     
     
     output$table_dli <- renderDataTable({
-      dli_data_table <- dli_data %>%
+     
+       dli_data_table <- dli_data %>%
         mutate(`Value of DLI (in mln)` = round(`Value of DLI (in mln)`,2)) %>%
         mutate(`Value of DLR (mln)` = round(`Value of DLR (mln)`,2)) %>%
         filter(region_name %in% input$region_dli) %>%
@@ -189,7 +190,7 @@ shinyServer = function(input, output, session) {
              )
       
       
-      DT::datatable(
+      DT::renderDataTable(
         dli_data_table,
         class = 'cell-border stripe hover',
         rownames = FALSE,
@@ -217,8 +218,7 @@ shinyServer = function(input, output, session) {
             list(className = 'dt-center', targets = '_all')
           )
         )
-      )
+      ) 
       
-       })
- 
+       }) 
 }

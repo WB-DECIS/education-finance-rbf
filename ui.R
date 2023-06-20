@@ -9,8 +9,6 @@ library("formattable")
 library(shinythemes)
 
 
-
-
 # Load Data
 rbf_data <- readRDS("data/rbf_data.rds")
 dli_data <- readRDS("data/dli_data.rds")
@@ -64,19 +62,7 @@ ui <-  shinyUI(
                   )
                   ),
                   
-                 # column(width = 3,
-                 #        pickerInput("fiscal_rbf", "Fiscal Year of Approval:",
-                 #                    choices = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
-                 #                    selected = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
-                 #                    multiple = TRUE,
-                #                     options = list(`actions-box` = TRUE)
-                #         )),
-                #  column(width = 1,
-                #        shiny::uiOutput("log_details0")
-                #  ),
-                
                 div(
-                  #style = "display: inline-block; vertical-align: center;",
                 fluidRow(
 
                   column(width = 3,
