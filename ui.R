@@ -1,14 +1,15 @@
 library(shinydashboard)
-#library(formattable)
 library(DT)
 library(shiny)
 library(readxl)
 library(tidyverse)
 library(shinycssloaders)
-#library(highcharter)
 library(shinyWidgets)
 library("formattable")
 library(shinythemes)
+
+
+
 
 # Load Data
 rbf_data <- readRDS("data/rbf_data.rds")
@@ -17,13 +18,11 @@ temp = factor(unique(as.character(rbf_data$income_name)),
               levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
 
 ui <-  shinyUI(
-    
+  
+  
         navbarPage("Results-Based Financing in Education",
-               #theme = "R-shiny-style-cwon-tim.css",
-               #theme = "custom_hd.css",
-               #theme = "bootstrap",
+              
                theme = shinytheme("united"),
-               # add tooltips
                tags$script(HTML('
            $( document ).on("shiny:sessioninitialized", function(event) {
                 $(\'span[data-toggle="tooltip"]\').tooltip({
@@ -34,22 +33,15 @@ ui <-  shinyUI(
                
        tabPanel("Introduction",
                 fluidPage(
-                      #    mainPanel(fluidRow(                    
                               includeHTML("www/About.html")
-                         # )
-                         # )
                 )),
        tabPanel(span("RBF Projects", 
                      title = "Search or filter education RBF projects funded by the World Bank and approved between 2015 and 2021.",
                      `data-toggle`="tooltip",  `data-placement` ="bottom"),
                   fluidRow(  
-                  #includeHTML("www/tab2.html"),
-                  #style = "border-right: 2px dotted #e68534; padding-left: 50px;",
                   column(width = 4,
                          pickerInput("region_rbf", "Region:",
                                      choices = c(sort(unique(as.character(rbf_data$region_name)))),
-                                     # selected = c("Sub-Saharan Africa"
-                                     #               ),
                                      selected = c(sort(unique(as.character(rbf_data$region_name)))),
                                      options = list(`actions-box` = TRUE), 
                                      multiple = TRUE)
@@ -57,7 +49,6 @@ ui <-  shinyUI(
                   column(width = 4,
                          pickerInput("income_rbf", "Income Level:",
                                      choices = levels(factor(temp)),
-                                     #selected = c('Lower middle income', "Low income", "middle income"),
                                      selected = levels(factor(temp)),
                                      options = list(`actions-box` = TRUE), 
                                      multiple = TRUE)
@@ -68,58 +59,54 @@ ui <-  shinyUI(
                                      label="Country:", 
                                      choices = c(sort(unique(rbf_data$Country))),
                                      multiple = TRUE,
-                                     #selected = c(sort(unique(as.character(rbf_data$Country)))),
                                      options = list(`actions-box` = TRUE)
-                                     # selected = c("Afghanistan", "Argentina", "Bangladesh", "Brazil", 
-                                     #              "Chile",  "Honduras", "India",
-                                     #              "Nepal"
-                                     #              
-                                     # )
                          )
+                  )
                   ),
+                  
+                 # column(width = 3,
+                 #        pickerInput("fiscal_rbf", "Fiscal Year of Approval:",
+                 #                    choices = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
+                 #                    selected = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
+                 #                    multiple = TRUE,
+                #                     options = list(`actions-box` = TRUE)
+                #         )),
+                #  column(width = 1,
+                #        shiny::uiOutput("log_details0")
+                #  ),
+                
+                div(
+                  #style = "display: inline-block; vertical-align: center;",
+                fluidRow(
+
+                  column(width = 3,
+                             pickerInput("lending_rbf", "Lending Instrument:",
+                                         choices = levels(rbf_data$`Lending Instrument`),
+                                         selected = levels(rbf_data$`Lending Instrument`),
+                                         multiple = TRUE,
+                                         options = list(`actions-box` = TRUE))),
+                  
+                  column(width = 1,
+                    uiOutput("log_details2")),
                   
                   column(width = 3,
                          pickerInput("fiscal_rbf", "Fiscal Year of Approval:",
                                      choices = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
-                                     # selected = c("2016", "2017", "2018", "2019", "2020", "2021"),
                                      selected = c(sort(unique(as.character(rbf_data$`Fiscal Year`)))),
                                      multiple = TRUE,
-                                     options = list(`actions-box` = TRUE)
-                         )),
+                                     options = list(`actions-box` = TRUE))),
+                  
                   column(width = 1,
-                        shiny::uiOutput("log_details0")
-                  ),
-                  # shiny::column(1, align = "right",
-                  #               shiny::uiOutput(("log_details0"))
-                  # ),
-                #column(width = 4,
-                #       pickerInput(inputId="edu_rbf",
-                #              label="Level of Education:", 
-                #              choices = levels(dli_data$`Level of Education`),
-                #              selected = levels(dli_data$`Level of Education`),
-                              # selected = c("Early Child Development", "Primary and Secondary Education", 
-                              #              "Tertiary Education"),
-                              # selected = c(sort(unique(rbf_data$`Level of Education`))),
-                #              multiple = TRUE,
-               #               options = list(`actions-box` = TRUE)
-               #   )
-               # ),
-                  column(width = 3, 
-                         pickerInput("lending_rbf", "Lending Instrument:",
-                                     choices = levels(rbf_data$`Lending Instrument`),
-                                     # selected = c('IPF/DLIs', "IPF/PBC", "PforR"),
-                                     selected = levels(rbf_data$`Lending Instrument`),
-                                     multiple = TRUE,
-                                     options = list(`actions-box` = TRUE)
-                                     )),
-                column(width = 1, align = "bottom",
-                         shiny::uiOutput("log_details2")
-                ),
-                ),
+                         shiny::uiOutput("log_details0")),
+                  
+                  tags$style(type='text/css', "#log_details2 { margin-top: 12px; margin-left: -25px;}"),
+                  tags$style(type='text/css', "#log_details0 { margin-top: 25px; margin-left: -50px;}")
+
+                )),
+                
                 fluidRow(
                          column(width = 12,
                                 dataTableOutput("table_rbf")),
-                                #formattableOutput("table_rbf"))
                          includeHTML("www/wb_logo.html")
                 ),
 
@@ -136,7 +123,6 @@ ui <-  shinyUI(
                    pickerInput("region_dli", "Region:",
                                choices = c(sort(unique(as.character(dli_data$region_name)))),
                                selected = c(sort(unique(as.character(dli_data$region_name)))),
-                               #selected = c(sort(unique(as.character(dli_data$region_name)))),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE)
             ),
@@ -152,11 +138,6 @@ ui <-  shinyUI(
                    pickerInput("country_dli", "Country:",
                                choices =  c(sort(unique(as.character(dli_data$Country)))),
                                selected = c(sort(unique(as.character(dli_data$Country)))),
-                               # selected = c("Afghanistan", "Argentina", "Bangladesh", "Brazil",
-                               #              "Chile",  "Honduras", "India",
-                               #              "Nepal"
-                               # 
-                               # ),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE),
             ),
@@ -172,11 +153,7 @@ ui <-  shinyUI(
                    pickerInput(inputId="edu_dli",
                                label="Level of Education:",
                                choices = levels(dli_data$`Level of Education`),
-                               # choices = c(sort(unique(dli_data$`Level of Education`))),
                                selected = levels(dli_data$`Level of Education`),
-                               # selected = c(sort(unique(dli_data$`Level of Education`))),
-                               # selected = c("Early Child Development", "Primary and Secondary Education", 
-                               #              "Tertiary Education"),
                                options = list(`actions-box` = TRUE), 
                                multiple = TRUE
                    )
@@ -196,7 +173,6 @@ ui <-  shinyUI(
                    pickerInput(inputId="topic_dli",
                                label="Topic:", 
                                choices = c(sort(unique(dli_data$Topic))),
-                              #selected = "Teacher Performance Assessment",
                                multiple = TRUE,
                               options = list(`actions-box` = TRUE), 
                                )
@@ -205,11 +181,8 @@ ui <-  shinyUI(
             
             
             fluidRow(
-              #column( width = 12, highchartOutput('bar')),
-                     #column( width = 12, tableOutput("data")),
                      column(width = 12,
                             dataTableOutput("table_dli")),
-                            #formattableOutput("table"))
                      includeHTML("www/tab3.html")
             ),
         
@@ -219,10 +192,7 @@ ui <-  shinyUI(
       
        tabPanel("Definitions",
                 fluidPage(
-                 # mainPanel(fluidRow(                    
                     includeHTML("www/Definitions.html")
-                 # )
-                #  )
                 )),
 
        

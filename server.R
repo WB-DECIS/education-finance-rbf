@@ -130,6 +130,7 @@ shinyServer = function(input, output, session) {
     shiny::actionButton(("log_details2"), "", icon = shiny::icon("info"))
     
   })
+  
   shiny::observeEvent(input$log_details2, {
     shiny::showModal(shiny::modalDialog(
       title = span("", style = "font-weight: bold; color:black; font-size:20px"),

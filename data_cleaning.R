@@ -1,4 +1,8 @@
 
+library(readxl)
+library(tidyverse)
+library(dplyr)
+
 # Load data
 rbf_data <- readRDS("data/rbf_data.rds") %>%
   rename(`Fiscal Year of Approval` = `Fiscal Year`)
@@ -47,9 +51,23 @@ rbf_data$`Closing date` <- format(rbf_data$`Closing date`, "%Y-%m-%d")
   rbf_data$income_name <- factor(rbf_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
   dli_data$income_name <- factor(dli_data$income_name, levels = c("Low income", "Lower middle income",  "Upper middle income", "High income"))
   
+  
+  # Edit Link for Project P173314
+  rbf_data$Link = ifelse(rbf_data$`Project ID` == "P173314",
+                         "https://documents1.worldbank.org/curated/en/506841602499970579/pdf/Project-Information-Document-Integrated-Safeguards-Data-Sheet-EQRA-Additional-Financing-P173314.pdf",
+                         rbf_data$`Link`)
+  
+  dli_data$Link = ifelse(dli_data$`Project ID` == "P173314",
+                         "https://documents1.worldbank.org/curated/en/506841602499970579/pdf/Project-Information-Document-Integrated-Safeguards-Data-Sheet-EQRA-Additional-Financing-P173314.pdf",
+                         dli_data$`Link`)
+  
+  # Combine Link w/ Project ID
+  rbf_data$`Project ID` = ifelse(is.na(rbf_data$Link),  rbf_data$`Project ID`, 
+                                 paste0("<a href='",rbf_data$Link,"' target = _blank>",rbf_data$`Project ID`,"</a>"))
+  dli_data$`Project ID` = ifelse(is.na(dli_data$Link),  dli_data$`Project ID`, 
+                                 paste0("<a href='",dli_data$Link,"' target= _blank>",dli_data$`Project ID`,"</a>"))
+
   # Clean up rbf_data
-  rbf_data$`Project ID` = paste0("<a href='",rbf_data$Link,"'target=\'_blank\'>",rbf_data$`Project ID`,"</a>")
-  dli_data$`Project ID` = paste0("<a href='",dli_data$Link,"'target=\'_blank\'>",dli_data$`Project ID`,"</a>")
   rbf_data$`% of IBR/IDA Commitment as RBF` <- rbf_data$`RBF Amt IBRD/IDA`/rbf_data$`IBRD/IDA Commit Amt`
   rbf_data$`% of Trust Fund Commitment as RBF` <- rbf_data$`RBF Amt TF`/rbf_data$`TF Amt`
   
@@ -57,9 +75,30 @@ rbf_data$`Closing date` <- format(rbf_data$`Closing date`, "%Y-%m-%d")
   dli_data$`Share of total RBF for DLI` <- ifelse(dli_data$`DLI/DLR` != "DLI", "Not Applicable",  
                                                   paste(round((dli_data$`Share of total RBF for DLI`*100),2),"%"))
   
+  dli_data <- dli_data %>%
+    dplyr::mutate(region_name = ifelse(Country %in% c("Angola","Botswana","Burundi","Comoros","Congo, Democratic Republic of","Eritrea","Eswatini",
+                                                 "Ethiopia","Kenya","Lesotho","Madagascar","Malawi","Mauritius","Mozambique","Namibia","Rwanda",
+                                                 "Sao Tome and Principe","Seychelles","Somalia","South Africa","South Sudan","Sudan","Tanzania",
+                                                 "Uganda","Zambia","Zimbabwe","Congo, Dem. Rep."), "Africa Eastern and Southern",
+                                  ifelse(Country %in% c("Benin","Burkina Faso","Cabo Verde","Cameroon","Central African Republic","Chad",
+                                                        "Congo, Republic of","Cote d'Ivoire","Equatorial Guinea","Gabon","Gambia, The","Ghana",
+                                                        "Guinea","Guinea-Bissau","Liberia","Mali","Mauritania","Niger","Nigeria","Senegal",
+                                                        "Sierra Leone","Togo","Congo, Rep."),"Africa Western and Central", region_name)))
+  
+  rbf_data <- rbf_data %>%
+    dplyr::mutate(region_name = ifelse(Country %in% c("Angola","Botswana","Burundi","Comoros","Congo, Democratic Republic of","Eritrea","Eswatini",
+                                                 "Ethiopia","Kenya","Lesotho","Madagascar","Malawi","Mauritius","Mozambique","Namibia","Rwanda",
+                                                 "Sao Tome and Principe","Seychelles","Somalia","South Africa","South Sudan","Sudan","Tanzania",
+                                                 "Uganda","Zambia","Zimbabwe","Congo, Dem. Rep."), "Africa Eastern and Southern",
+                                  ifelse(Country %in% c("Benin","Burkina Faso","Cabo Verde","Cameroon","Central African Republic","Chad",
+                                                        "Congo, Republic of","Cote d'Ivoire","Equatorial Guinea","Gabon","Gambia, The","Ghana",
+                                                        "Guinea","Guinea-Bissau","Liberia","Mali","Mauritania","Niger","Nigeria","Senegal",
+                                                        "Sierra Leone","Togo","Congo, Rep."),"Africa Western and Central", region_name)))
+
+
+  
   # Remove quotes from PDO string
   rbf_data <- rbf_data %>% mutate(PDO = gsub('"','',PDO))
-
 
 saveRDS(rbf_data, "data/rbf_data.rds")
 saveRDS(dli_data, "data/dli_data.rds")
