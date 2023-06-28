@@ -89,7 +89,7 @@ shinyServer = function(input, output, session) {
   
      DT::datatable(rbf_data_table,
              
-             class='cell-border stripe',
+             class='cell-border stripe hover',
              escape = FALSE,
              extensions = c('Buttons', 'FixedColumns', "FixedHeader"), 
              rownames = F,
@@ -190,7 +190,7 @@ shinyServer = function(input, output, session) {
              )
       
       
-      DT::renderDataTable(
+      DT::datatable (
         dli_data_table,
         class = 'cell-border stripe hover',
         rownames = FALSE,
