@@ -5,7 +5,7 @@ library(readxl)
 library(tidyverse)
 library(shinycssloaders)
 library(shinyWidgets)
-library("formattable")
+library(formattable)
 library(shinythemes)
 
 

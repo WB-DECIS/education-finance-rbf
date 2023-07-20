@@ -100,7 +100,8 @@ shinyServer = function(input, output, session) {
                paging = TRUE,
                pageLength = 20,
                buttons = c('copy', 'csv', 'excel'),
-               fixedHeader = TRUE,
+               scrollY = "500px",
+               scrollX = "500px",
                fixedColumns = list(leftColumns = 1),
                scroller = TRUE,
                columnDefs = list(
@@ -195,7 +196,7 @@ shinyServer = function(input, output, session) {
         class = 'cell-border stripe hover',
         rownames = FALSE,
         callback = JS(paste0("
-          var tips = ", jsonlite::toJSON(colnames(dli_data_table)), ",
+         var tips = ", jsonlite::toJSON(colnames(dli_data_table)), ",
               header = table.columns().header();
           for (var i = 0; i < tips.length; i++) {
             $(header[i]).attr('title', tips[i]);
@@ -207,11 +208,11 @@ shinyServer = function(input, output, session) {
         options = list(
           dom = 't',
           paging = TRUE,
-          pageLength = 20,
-          fixedHeader = TRUE,
+          pageLength = 10,
+          scrollY = "500px",
+          scrollX = "500px",
           fixedColumns = list(leftColumns = 1),
           buttons = c('copy', 'csv', 'excel'),
-          scroller = TRUE,
           autoWidth = TRUE,
           columnDefs = list(
             list(width = '200px', targets = 9),  # Adjusted to target the 10th column (0-indexed)
